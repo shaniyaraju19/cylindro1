@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Login - LPG Monitoring System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="login-container" style="
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 40px;
+            border-radius: 10px;
+            color: white;
+        ">
+            <h2 class="text-center mb-4">User Login</h2>
+            
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" autocomplete="off" id="email" name="email" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" autocomplete="new-password" name="password" required>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Login
+                    </button>
+                </div>
+            </form>
+
+            <!-- ✅ REGISTER LINK ADDED -->
+            <div class="text-center mt-3">
+                <p>
+                    Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="text-warning">
+                        Register Here
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

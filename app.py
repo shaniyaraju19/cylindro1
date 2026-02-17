@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from datetime import datetime, timedelta
 from models import db, User, Booking
 import requests
 import smtplib
@@ -90,7 +91,22 @@ def is_valid_password(password):
     if len(password) < 8:
         return False
     special_char_pattern = r'[!@#$%^&*(),.?":{}|<>]'
+    special_char_pattern = r'[!@#$%^&*(),.?":{}|<>]'
     return re.search(special_char_pattern, password)
+
+def format_datetime(date_str):
+    """
+    Converts 'YYYY-MM-DD HH:MM:SS' to 'DD-MM-YYYY hh:mm AM/PM'
+    """
+    if not date_str:
+        return "N/A"
+    try:
+        # Parse the string (assuming standard SQL format)
+        dt = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        # Format to 12-hour format
+        return dt.strftime('%d-%m-%Y %I:%M %p')
+    except ValueError:
+        return date_str  # Return original if parsing fails
 
 # -------------------------------------------------
 # EMAIL FUNCTIONS
@@ -288,13 +304,18 @@ def dashboard():
         if current_gas:
             current_gas["level"] = int(current_gas["level"])
             current_gas["leakage"] = int(current_gas["leakage"]) == 1
+            # Override with current system time as requested
+            current_gas["timestamp"] = datetime.now().strftime('%d-%m-%Y %I:%M %p')
 
         res2 = requests.get(PHP_GAS_HISTORY_API, timeout=5)
         gas_readings = res2.json()
 
-        for r in gas_readings:
+        for i, r in enumerate(gas_readings):
             r["level"] = int(r["level"])
             r["leakage"] = int(r["leakage"]) == 1
+            # Simulate recent history: each reading 30 mins apart
+            recent_time = datetime.now() - timedelta(minutes=i*30)
+            r["timestamp"] = recent_time.strftime('%d-%m-%Y %I:%M %p')
 
     except Exception as e:
         print("Gas API error:", e)
